@@ -8,6 +8,12 @@ import './App.css';
 class DevicePrediction extends Component {
     constructor() {
         super();
+
+        this.cameraIds = [];
+
+        this.state = {
+            activeCameraIndex: null
+        };
     }
 
     componentDidMount() {
@@ -65,21 +71,61 @@ class DevicePrediction extends Component {
     }
 
     async setupWebcam() {
-        return new Promise((resolve, reject) => {
-            const navigatorAny = navigator;
-            navigator.getUserMedia = navigator.getUserMedia ||
-                navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
-                navigatorAny.msGetUserMedia;
-            if (navigator.getUserMedia) {
-                navigator.getUserMedia({video: true},
-                    stream => {
-                        this.webcamElement.srcObject = stream;
-                        this.webcamElement.addEventListener('loadeddata', () => resolve(), false);
-                    },
-                    error => reject());
-            } else {
-                reject();
+        navigator.mediaDevices.enumerateDevices().then((e) => {
+            this.gotSources(e);
+
+            console.log(JSON.stringify(this.cameraIds));
+
+            this.setState({
+                activeCameraIndex: 0
+            });
+        });
+    }
+
+    startCamera(index) {
+        if (window.stream) {
+            window.stream.getTracks().forEach(function (track) {
+                track.stop();
+            });
+        }
+
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                deviceId: {exact: this.cameraIds[index]}
             }
+        }).then(stream => {
+            window.stream = stream;
+            this.webcamElement.srcObject = stream;
+        });
+    }
+
+    gotSources(sourceInfos) {
+        for (var i = 0; i !== sourceInfos.length; ++i) {
+            var sourceInfo = sourceInfos[i];
+
+            if (sourceInfo.kind === 'videoinput') {
+                this.cameraIds.push(sourceInfo.deviceId);
+            }
+        }
+    }
+
+    componentDidUpdate() {
+        if(this.state.activeCameraIndex !== null) {
+            this.startCamera(this.state.activeCameraIndex);
+        }
+    }
+
+    onCameraChange() {
+        //
+        // if (window.stream) {
+        //     window.stream.getTracks().forEach(function (track) {
+        //         track.stop();
+        //     });
+        // }
+        // return;
+
+        this.setState({
+            activeCameraIndex: this.cameraIds.length === this.state.activeCameraIndex + 1 ? 0 : this.state.activeCameraIndex + 1
         });
     }
 
@@ -88,6 +134,8 @@ class DevicePrediction extends Component {
             <div className="app-container">
                 <div className="header">
                     <div className="logo-container"/>
+
+                    <button onClick={this.onCameraChange.bind(this)}>Camera v1.1</button>
                 </div>
                 <div className="btn-container">
                     <button id="class-a">Add A</button>

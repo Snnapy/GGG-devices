@@ -2,6 +2,7 @@
   "name": "pwa",
   "version": "0.1.0",
   "private": true,
+  "homepage" : "/GGG2019",
   "dependencies": {
     "@tensorflow-models/knn-classifier": "^1.1.0",
     "@tensorflow-models/mobilenet": "^1.0.1",

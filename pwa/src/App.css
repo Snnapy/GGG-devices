@@ -11,7 +11,12 @@
     z-index: 2;
     background: #1a1a1a;
     border-bottom: 2px solid #000;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1rem;
 }
+
 .logo-container{
     width: 285px;
     height: 28px;
