@@ -1,17 +1,17 @@
-import knnClassifier from '@tensorflow-models/knn-classifier';
-import mobilenet from '@tensorflow-models/mobilenet';
-import tf from '@tensorflow/tfjs';
- const classifier = knnClassifier.create();
+import * as knnClassifier from '@tensorflow-models/knn-classifier';
+import * as mobilenet from '@tensorflow-models/mobilenet';
+import * as tf from '@tensorflow/tfjs';
+const classifier = knnClassifier.create();
 
 let net;
 const promises = [];
 
 export async function loadModel() {
     net = await mobilenet.load();
-    trainModel();
+    return net;
 }
 
-export function trainModel(){
+export function trainModel(callback){
     fetch('https://localhost/images')
         .then(function (response) {
             return response.json();
@@ -21,8 +21,8 @@ export function trainModel(){
                 promises.push(train(image));
             });
             Promise.all(promises).then(()=> {
-                startRecognition();
                 alert('starting');
+                callback();
             });
         });
 }
@@ -34,12 +34,12 @@ function train(image) {
             addToModel(img);
             resolve()
         };
-        img.src = image;
-        document.body.appendChild(img);
+        img.crossOrigin = "anonymous";
+        img.src = "https://localhost" + image;
     })
 }
 
-function addToModel(img) {
+export function addToModel(img) {
     img = tf.browser.fromPixels(img);
     // Get the intermediate activation of MobileNet 'conv_preds' and pass that
     // to the KNN classifier.
@@ -49,22 +49,12 @@ function addToModel(img) {
     classifier.addExample(activation, 1);
 }
 
-async function startRecognition() {
-    while (true) {
-        if (classifier.getNumClasses() > 0) {
-            // Get the activation from mobilenet from the webcam.
-            const activation = net.infer(webcamElement, 'conv_preds');
-            // Get the most likely class and confidences from the classifier module.
-            const result = await classifier.predictClass(activation);
-
-            const classes = ['A', 'B', 'C'];
-            document.getElementById('console').innerText = `
-        prediction: ${classes[result.classIndex]}\n
-        probability: ${result.confidences[result.classIndex]}
-      `;
-        }
-
-        await tf.nextFrame();
+export async function predictClass(webcamElement) {
+    if (classifier.getNumClasses() > 0) {
+        // Get the activation from mobilenet from the webcam.
+        const activation = net.infer(webcamElement, 'conv_preds');
+        // Get the most likely class and confidences from the classifier module.
+        const result = await classifier.predictClass(activation);
+        return result;
     }
 }
-
