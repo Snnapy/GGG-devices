@@ -20,7 +20,7 @@ async function app() {
         if(recordingButton === classId){
             clearInterval(interval);
             recordingButton = -1;
-            document.getElementById('class-' + classId).innerHTML = 'Stop';
+            document.getElementById('class-' + classId).innerHTML = 'class-' + classId;
         } else {
             interval = setInterval(()=>{
                 recordingButton = classId;
@@ -30,8 +30,8 @@ async function app() {
 
                 // Pass the intermediate activation to the classifier.
                 classifier.addExample(activation, classId);
-            }, 200)
-            document.getElementById('class-' + classId).innerHTML = 'Device' + classId;
+            }, 300)
+            document.getElementById('class-' + classId).innerHTML = 'Stop class-' + classId;
         }
     };
 
