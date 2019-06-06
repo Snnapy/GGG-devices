@@ -1,16 +1,14 @@
-const fs = require("fs");
-
 const tf = require('@tensorflow/tfjs');
 const knnClassifier = require('@tensorflow-models/knn-classifier');
 const mobilenet = require('@tensorflow-models/mobilenet');
 
 const classifier = knnClassifier.create();
 
-const classes = require('./devices_classes');
+const classes = require('../server/devices_classes');
 
 let model;
 (async function() {
-    // model = await tf.loadLayersModel('://devices-model');
+    // model = await tf.loadLayersModel('https://localhost/model.json');
     model = await mobilenet.load();
     trainModel();
 })();
@@ -25,16 +23,20 @@ function readFromDisk(path, classId){
     fs.readdir(path, (err, entries) => {
         if (!err) {
             entries.forEach(image => {
-                fs.readFile(image, function (err, data) {
-                    if (err) throw err;
-        
+
+                const img = new Image();
+                img.onload = () => {
+
+                    img = tf.browser.fromPixels(img);
                     // Get the intermediate activation of MobileNet 'conv_preds' and pass that
                     // to the KNN classifier.
-                    const activation = model.infer(data, "conv_preds");
+                    const activation = model.infer(img, "conv_preds");
 
                     // Pass the intermediate activation to the classifier.
                     classifier.addExample(activation, classId);
-                  });
+                }
+
+                img.src = path + "/" + image;
             })
         }
     });
