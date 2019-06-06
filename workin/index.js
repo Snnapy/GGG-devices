@@ -1,4 +1,4 @@
-const classifier = knnClassifier.create();
+let classifier;
 const webcamElement = document.getElementById('webcam');
 let net;
 
@@ -8,8 +8,20 @@ let interval;
 async function app() {
     console.log('Loading mobilenet..');
 
+    let net = localStorage.getItem('net');
+    if(!net){
+        net = await mobilenet.load();
+    } else {
+        net = JSON.parse(net);
+    }
+
+    let classifier = localStorage.getItem('classifier');
+    if(!classifier){
+        classifier = knnClassifier.create();
+    } else {
+        classifier = JSON.parse(classifier);
+    }
     // Load the model.
-    net = await mobilenet.load();
     console.log('Sucessfully loaded model');
 
     await setupWebcam();
@@ -21,6 +33,8 @@ async function app() {
             clearInterval(interval);
             recordingButton = -1;
             document.getElementById('class-' + classId).innerHTML = 'class-' + classId;
+            localStorage.setItem('net', JSON.stringify(net));
+            localStorage.setItem('classifier', JSON.stringify(classifier));
         } else {
             interval = setInterval(()=>{
                 recordingButton = classId;
