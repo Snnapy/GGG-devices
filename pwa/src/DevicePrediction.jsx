@@ -82,11 +82,13 @@ class DevicePrediction extends Component {
     render() {
         return (
             <div className="container">
-                <div id="console"></div>
-                <video autoPlay playsinline muted id="webcam" width="100%" height="100%"></video>
-                <button id="class-a">Add A</button>
-                <button id="class-b">Add B</button>
-                <button id="class-c">Add C</button>
+                <div className={'buttons-container'}>
+                    <button id="class-a">Add A</button>
+                    <button id="class-b">Add B</button>
+                    <button id="class-c">Add C</button>
+                </div>
+                <video autoPlay muted id="webcam" />
+                <div id="console" />
             </div>
         )
     }
