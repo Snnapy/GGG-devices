@@ -1,0 +1,16 @@
+{
+  "name": "ggg-model-training",
+  "version": "1.0.0",
+  "description": "",
+  "main": "predict.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tensorflow/tfjs": "^1.1.2",
+    "@tensorflow-models/knn-classifier": "^1.1.0",
+    "@tensorflow-models/mobilenet": "^1.0.1"
+  }
+}
