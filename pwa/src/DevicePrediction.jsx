@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import * as tf from '@tensorflow/tfjs';
 import * as mobilenetModule from '@tensorflow-models/mobilenet';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';
@@ -6,11 +6,11 @@ import * as knnClassifier from '@tensorflow-models/knn-classifier';
 import './App.css';
 
 class DevicePrediction extends Component {
-    constructor () {
+    constructor() {
         super();
     }
 
-    componentDidMount () {
+    componentDidMount() {
         this.classifier = knnClassifier.create();
         this.webcamElement = document.getElementById('webcam');
         this.net = null;
@@ -49,18 +49,22 @@ class DevicePrediction extends Component {
                 // Get the most likely class and confidences from the classifier module.
                 const result = await this.classifier.predictClass(activation);
 
+                console.log(activation);
+
                 const classes = ['A', 'B', 'C'];
-                document.getElementById('console').innerText = `
-        prediction: ${classes[result.classIndex]}\n
-        probability: ${result.confidences[result.classIndex]}
-      `;
+                document.getElementById('result').innerHTML = `
+                <div class="result-container">
+                    <p class="prediction">prediction: ${classes[result.classIndex]}</p>
+                    <p class="probability">probability: ${result.confidences[result.classIndex]}</p>
+                    <span class="chevron bottom"    />
+                </div>`;
             }
 
             await tf.nextFrame();
         }
     }
 
-    async setupWebcam(){
+    async setupWebcam() {
         return new Promise((resolve, reject) => {
             const navigatorAny = navigator;
             navigator.getUserMedia = navigator.getUserMedia ||
@@ -70,7 +74,7 @@ class DevicePrediction extends Component {
                 navigator.getUserMedia({video: true},
                     stream => {
                         this.webcamElement.srcObject = stream;
-                        this.webcamElement.addEventListener('loadeddata',  () => resolve(), false);
+                        this.webcamElement.addEventListener('loadeddata', () => resolve(), false);
                     },
                     error => reject());
             } else {
@@ -81,12 +85,17 @@ class DevicePrediction extends Component {
 
     render() {
         return (
-            <div className="container">
-                <div id="console"></div>
-                <video autoPlay playsinline muted id="webcam" width="100%" height="100%"></video>
-                <button id="class-a">Add A</button>
-                <button id="class-b">Add B</button>
-                <button id="class-c">Add C</button>
+            <div className="app-container">
+                <div className="header">
+                    <div className="logo-container"/>
+                </div>
+                <div className="btn-container">
+                    <button id="class-a">Add A</button>
+                    <button id="class-b">Add B</button>
+                    <button id="class-c">Add C</button>
+                </div>
+                <video autoPlay muted id="webcam" width="100%" height="100%"></video>
+                <div id="result"></div>
             </div>
         )
     }
