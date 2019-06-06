@@ -91,7 +91,7 @@ class DevicePrediction extends Component {
 
         navigator.mediaDevices.getUserMedia({
             video: {
-                deviceId: {exact: this.cameraIds[index]}
+                deviceId: {exact: this.cameraIds[index]},
             }
         }).then(stream => {
             window.stream = stream;
@@ -135,7 +135,7 @@ class DevicePrediction extends Component {
                 <div className="header">
                     <div className="logo-container"/>
 
-                    <button onClick={this.onCameraChange.bind(this)}>Camera v1.1</button>
+                    <button onClick={this.onCameraChange.bind(this)}>Camera v1.2</button>
                 </div>
                 <div className="btn-container">
                     <button id="class-a">Add A</button>
