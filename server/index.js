@@ -15,9 +15,14 @@ app.use(function(req, res, next) {
 
 app.use(express.static('static'));
 
-app.get('/images', function (req, res) {
-    getImages(res);
-});
+// app.get('/images', function (req, res) {
+//     getImages(res);
+// });
+
+app.get('/images/:deviceName', function(req, res) {
+    const deviceName = req.params.deviceName;
+    getImages(res, deviceName);
+})
 
 https.createServer({
     key: fs.readFileSync('server.key'),
@@ -26,16 +31,9 @@ https.createServer({
     console.log('listening on 443')
 });
 
-async function getImages(res) {
-    let imagesArray = [];
-    let vva3Paths = fs.readdirSync("./static/vva3");
-    let fr645Paths = fs.readdirSync("./static/fr645");
-    let fenix5Paths = fs.readdirSync("./static/fenix5");
-
-    imagesArray = imagesArray.concat(vva3Paths.map((img)=> "/vva3/" + img));
-    imagesArray = imagesArray.concat(fr645Paths.map((img)=> "/fr645/" + img));
-    imagesArray = imagesArray.concat(fenix5Paths.map((img)=> "/fenix5/" + img));
-
+async function getImages(res, deviceName) {
+    let paths = fs.readdirSync(`./static/${deviceName}`);
+    const imagesArray = paths.map((img)=> `/${deviceName}/${img}`);
     res.send(imagesArray);
 }
 

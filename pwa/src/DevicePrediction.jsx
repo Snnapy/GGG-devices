@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import * as tf from '@tensorflow/tfjs';
 // Import CSS from App.css
 import './App.css';
-import {loadModel, trainModel, predictClass} from './trainer';
+import {loadModel, trainModel, predictClass, DEVICES_CLASSES} from './trainer';
 
 class DevicePrediction extends Component {
     constructor() {
@@ -16,10 +16,8 @@ class DevicePrediction extends Component {
     }
 
     componentDidMount() {
-        console.log('here');
         this.webcamElement = document.getElementById('webcam');
         loadModel().then(() => {
-            console.log('model loaded');
             trainModel(() => {
                 this.app();
             });
@@ -28,20 +26,23 @@ class DevicePrediction extends Component {
 
     async app() {
         await this.setupWebcam();
-        debugger
 
         while (true) {
             const result = await predictClass(this.webcamElement);
 
-            const classes = ['A', 'B', 'C'];
-            document.getElementById('result').innerHTML = `
-            <div class="result-container">
-                <p class="prediction">prediction: ${classes[result.classIndex]}</p>
-                <p class="probability">probability: ${result.confidences[result.classIndex]}</p>
-                <span class="chevron bottom"    />
-            </div>`;
+            if (!result) {
+                await tf.nextFrame();
+            } else {
+                const classes = Object.values(DEVICES_CLASSES);
+                document.getElementById('result').innerHTML = `
+                <div class="result-container">
+                    <p class="prediction">prediction: ${classes[result.label]}</p>
+                    <p class="probability">probability: ${result.confidences[result.label]}</p>
+                    <span class="chevron bottom"    />
+                </div>`;
 
-            await tf.nextFrame();
+                await tf.nextFrame();
+            }
         }
     }
 
