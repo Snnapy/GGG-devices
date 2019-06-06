@@ -4,6 +4,7 @@ import * as mobilenetModule from '@tensorflow-models/mobilenet';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';
 // Import CSS from App.css
 import './App.css';
+import {loadModel, trainModel} from './trainer';
 
 class DevicePrediction extends Component {
     constructor() {
@@ -20,6 +21,8 @@ class DevicePrediction extends Component {
         this.classifier = knnClassifier.create();
         this.webcamElement = document.getElementById('webcam');
         this.net = null;
+        loadModel();
+        trainModel();
         this.app();
     }
 
