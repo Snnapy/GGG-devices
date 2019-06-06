@@ -24,7 +24,7 @@ function readFromDisk(path, classId){
         if (!err) {
             entries.forEach(image => {
 
-                const img = new Image();
+                let img = document.createElement("IMG");
                 img.onload = () => {
 
                     img = tf.browser.fromPixels(img);
@@ -34,7 +34,7 @@ function readFromDisk(path, classId){
 
                     // Pass the intermediate activation to the classifier.
                     classifier.addExample(activation, classId);
-                }
+                };
 
                 img.src = path + "/" + image;
             })
